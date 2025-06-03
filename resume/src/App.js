@@ -1,18 +1,21 @@
-// App.js
-import React from 'react';
+import React, { useState } from 'react';
 import './App.css';
 
 function App() {
+  const [message, setMessage] = useState('');
+
   const handleDownload = () => {
-    window.location.href = 'https://fswd-ouad.onrender.com/resume';
+    setMessage('Downloading your resume... 🚀');
+    window.location.href = 'https://fswd-07fo.onrender.com/resume';
   };
 
   return (
     <div className="container">
-      <h2>Download Resume</h2>
+      <h2><i className="fas fa-file-download"></i> Download Resume</h2>
       <button onClick={handleDownload}>
-        Download Resume
+        <i className="fas fa-cloud-download-alt"></i> Download
       </button>
+      {message && <div className="message">{message}</div>}
     </div>
   );
 }
