@@ -80,8 +80,12 @@ app.post('/upload-path', async (req, res) => {
 
 // ——— Download the Latest Uploaded Resume ———
 app.get('/resume', async (req, res) => {
+  if (!gfsBucket) {
+    console.error('❌ gfsBucket not initialized yet');
+    return res.status(503).json({ error: 'Server not ready, try again later' });
+  }
+
   try {
-    // Find most recent upload
     const files = await gfsBucket
       .find({})
       .sort({ uploadDate: -1 })
@@ -91,18 +95,17 @@ app.get('/resume', async (req, res) => {
     if (!files.length) {
       return res.status(404).json({ error: 'No resume found' });
     }
+
     const file = files[0];
     res.set('Content-Type', file.contentType);
-    res.set(
-      'Content-Disposition',
-      `attachment; filename="${file.filename}"`
-    );
+    res.set('Content-Disposition', `attachment; filename="${file.filename}"`);
     gfsBucket.openDownloadStreamByName(file.filename).pipe(res);
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
+
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
