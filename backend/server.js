@@ -9,7 +9,7 @@ app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 
 // ——— MongoDB & GridFSBucket ———
-const mongoURI = 'mongodb+srv://abdulriyan062:11@ar.w0ay8z9.mongodb.net/fswd?retryWrites=true&w=majority&appName=AR';
+const mongoURI = 'mongodb+srv://armaansalam786:11@armaan.z2dhe64.mongodb.net/fswd?retryWrites=true&w=majority&appName=armaan';
 mongoose
   .connect(mongoURI)
   .then(() => console.log('✅ MongoDB connected'))
