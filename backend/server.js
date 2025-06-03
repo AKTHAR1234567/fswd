@@ -19,10 +19,11 @@ let gfsBucket;
 mongoose.connection.once('open', () => {
   gfsBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
     bucketName: 'resumes'
-    console.log('✅ GridFSBucket initialized');
+   
 
   });
 });
+ console.log('✅ GridFSBucket initialized');
 
 // ——— Server-side “Upload by Path” Endpoint ———
 // Call this once (e.g. via Postman or curl) to load your resume into GridFS.
