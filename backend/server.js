@@ -8,25 +8,24 @@ const app = express();
 app.use(cors({ origin: 'http://localhost:3000' }));
 app.use(express.json());
 
-// ——— MongoDB & GridFSBucket ———
+// MongoDB connection
 const mongoURI = 'mongodb+srv://aktharzama8310:11@akthar.vcbwl6k.mongodb.net/fswd?retryWrites=true&w=majority&appName=Akthar';
+
 mongoose
   .connect(mongoURI)
   .then(() => console.log('✅ MongoDB connected'))
   .catch(err => console.error('❌ MongoDB connection error:', err));
 
 let gfsBucket;
+
 mongoose.connection.once('open', () => {
   gfsBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
     bucketName: 'resumes'
-   
-
   });
+  console.log('✅ GridFSBucket initialized');
 });
- console.log('✅ GridFSBucket initialized');
 
-// ——— Server-side “Upload by Path” Endpoint ———
-// Call this once (e.g. via Postman or curl) to load your resume into GridFS.
+// Upload file from local path (used in Postman)
 app.post('/upload-path', async (req, res) => {
   const { filePath } = req.body;
   if (!filePath) return res.status(400).json({ error: 'Missing filePath' });
@@ -80,8 +79,7 @@ app.post('/upload-path', async (req, res) => {
   }
 });
 
-
-// ——— Download the Latest Uploaded Resume ———
+// Download the latest uploaded resume
 app.get('/resume', async (req, res) => {
   if (!gfsBucket) {
     console.error('❌ gfsBucket not initialized yet');
@@ -109,7 +107,25 @@ app.get('/resume', async (req, res) => {
   }
 });
 
+// Debugging route to list files in GridFS
+app.get('/list-files', async (req, res) => {
+  if (!gfsBucket) {
+    return res.status(503).json({ error: 'Server not ready' });
+  }
 
+  try {
+    const files = await gfsBucket.find({}).toArray();
+    if (!files.length) {
+      return res.status(404).json({ error: 'No files found' });
+    }
+    res.json(files);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Could not list files' });
+  }
+});
+
+// Start the server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () =>
   console.log(`🚀 Backend server running on port ${PORT}`)
