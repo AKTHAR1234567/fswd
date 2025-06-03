@@ -19,6 +19,8 @@ let gfsBucket;
 mongoose.connection.once('open', () => {
   gfsBucket = new mongoose.mongo.GridFSBucket(mongoose.connection.db, {
     bucketName: 'resumes'
+    console.log('✅ GridFSBucket initialized');
+
   });
 });
 
